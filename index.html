@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estándar de Ejecución</title>
+
+<style>
+:root{
+  --ink:#102a43;
+  --muted:#64748b;
+  --bg:#f3f6fa;
+  --paper:#fff;
+  --line:#e3eaf2;
+  --blue:#0969da;
+  --cyan:#0ea5e9;
+  --green:#138a5f;
+  --amber:#d97706;
+  --red:#d14343;
+  --navy:#0b1f3a;
+  --shadow:0 10px 28px rgba(16,42,67,.08);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  color:var(--ink);
+}
+
+header{
+  background:linear-gradient(115deg,#0b1f3a,#123f71 52%,#1266a6);
+  color:#fff;
+  padding:25px max(24px,calc((100vw - 1440px)/2));
+}
+
+.head{
+  max-width:1440px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  gap:24px;
+  align-items:flex-start;
+}
+
+.eyebrow{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1.25px;
+  text-transform:uppercase;
+  opacity:.7;
+}
+
+.title{
+  font-size:31px;
+  font-weight:800;
+  letter-spacing:-.5px;
+  margin:5px 0;
+}
+
+.subtitle{
+  font-size:14px;
+  line-height:1.45;
+  opacity:.9;
+  max-width:760px;
+}
+
+.source{
+  font-size:12px;
+  line-height:1.5;
+  background:#ffffff1e;
+  border:1px solid #ffffff40;
+  border-radius:12px;
+  padding:9px 12px;
+  text-align:right;
+  min-width:220px;
+}
+
+main{
+  max-width:1440px;
+  margin:auto;
+  padding:22px 24px 48px;
+}
+
+.toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:end;
+  padding:15px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:14px;
+  box-shadow:var(--shadow);
+}
+
+.field{
+  display:grid;
+  gap:5px;
+  min-width:165px;
+}
+
+.field label{
+  font-size:10px;
+  color:var(--muted);
+  font-weight:800;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+
+.field select,
+.field input{
+  height:37px;
+  border:1px solid #cfd9e5;
+  border-radius:8px;
+  padding:0 10px;
+  background:#fff;
+  color:var(--ink);
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-left:auto;
+}
+
+.btn{
+  height:37px;
+  border:0;
+  border-radius:8px;
+  background:var(--blue);
+  color:#fff;
+  padding:0 12px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn.secondary{
+  background:#edf4fb;
+  color:#16496e;
+  border:1px solid #cfe0f1;
+}
+
+.btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.hidden{display:none}
+
+.section{margin-top:22px}
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.section h2{
+  margin:0;
+  font-size:16px;
+}
+
+.hint{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.region-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(330px,1fr));
+  gap:14px;
+}
+
+.card,
+.dist{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+}
+
+.card{padding:16px}
+
+.label{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:800;
+  letter-spacing:.65px;
+  text-transform:uppercase;
+}
+
+.region-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.region-top h3{
+  margin:5px 0 0;
+  font-size:21px;
+}
+
+.status{
+  font-size:11px;
+  font-weight:800;
+  padding:3px 7px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+
+.status.good{
+  background:#eaf8f0;
+  color:#137a50;
+}
+
+.status.warn{
+  background:#fff5de;
+  color:#9a6400;
+}
+
+.status.bad{
+  background:#feecef;
+  color:#b42335;
+}
+
+.status.neutral{
+  background:#eef2f7;
+  color:#52667a;
+}
+
+.metric-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  margin-top:15px;
+}
+
+.metric-row strong{
+  font-size:23px;
+}
+
+.bar{
+  height:9px;
+  border-radius:99px;
+  background:#edf2f7;
+  overflow:hidden;
+  margin-top:9px;
+}
+
+.bar span{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,var(--blue),var(--cyan));
+  border-radius:99px;
+}
+
+.bar.warn span{
+  background:linear-gradient(90deg,#e69c00,#f4bc4a);
+}
+
+.bar.bad span{
+  background:linear-gradient(90deg,#dc5b57,#f28a79);
+}
+
+.note{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:8px;
+  line-height:1.4;
+}
+
+.donuts{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+
+.donut-wrap{
+  display:grid;
+  place-items:center;
+  gap:6px;
+}
+
+.donut{
+  --pct:0;
+  --ring:var(--cyan);
+  width:88px;
+  height:88px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  position:relative;
+  background:conic-gradient(var(--ring) calc(var(--pct)*1%),#e8eef5 0);
+}
+
+.donut:after{
+  content:"";
+  position:absolute;
+  inset:9px;
+  background:#fff;
+  border-radius:50%;
+}
+
+.donut b,
+.donut small{
+  position:relative;
+  z-index:1;
+  text-align:center;
+}
+
+.donut b{font-size:17px}
+
+.donut small{
+  font-size:10px;
+  line-height:1.15;
+  color:var(--muted);
+  font-weight:700;
+  max-width:64px;
+}
+
+.good .donut{--ring:var(--green)}
+.warn .donut{--ring:var(--amber)}
+.bad .donut{--ring:var(--red)}
+.neutral .donut{--ring:#b9c6d5}
+
+.accordion-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.list{
+  display:grid;
+  gap:12px;
+}
+
+details.dist{
+  overflow:hidden;
+}
+
+details.dist[open]{
+  border-color:#bdd9f4;
+}
+
+summary{
+  list-style:none;
+  cursor:pointer;
+}
+
+summary::-webkit-details-marker{
+  display:none;
+}
+
+.dist-summary{
+  padding:16px;
+  display:grid;
+  grid-template-columns:minmax(230px,1.8fr) repeat(4,minmax(100px,.85fr)) 28px;
+  gap:10px;
+  align-items:center;
+}
+
+.summary-title{
+  display:grid;
+  gap:4px;
+}
+
+.summary-title strong{
+  font-size:15px;
+}
+
+.summary-sub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.metric .m-label{
+  font-size:10px;
+  color:var(--muted);
+  font-weight:800;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+
+.metric .m-value{
+  font-size:18px;
+  font-weight:800;
+  margin-top:3px;
+}
+
+.chevron{
+  text-align:center;
+  font-size:18px;
+  color:var(--muted);
+}
+
+details[open] > .dist-summary .chevron{
+  transform:rotate(180deg);
+}
+
+.dist-body{
+  border-top:1px solid #edf1f5;
+  padding:0 16px 16px;
+}
+
+.subheading{
+  font-size:11px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:800;
+  margin:16px 0 9px;
+}
+
+.people{
+  display:grid;
+  gap:9px;
+}
+
+.person,
+.client{
+  border:1px solid #e5edf6;
+  border-radius:12px;
+  overflow:hidden;
+  background:#fff;
+}
+
+.person-summary{
+  padding:13px;
+  display:grid;
+  grid-template-columns:minmax(220px,1.7fr) repeat(3,minmax(95px,.8fr)) 26px;
+  gap:9px;
+  align-items:center;
+}
+
+.client-summary{
+  padding:12px 13px;
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) 26px;
+  gap:9px;
+  align-items:center;
+  background:#fbfdff;
+}
+
+.plus{
+  width:24px;
+  height:24px;
+  border:1px solid #d7e2ee;
+  border-radius:50%;
+  color:var(--blue);
+  font-size:17px;
+  font-weight:700;
+  display:grid;
+  place-items:center;
+}
+
+details[open] > .person-summary .plus,
+details[open] > .client-summary .plus{
+  font-size:0;
+  background:#edf5ff;
+}
+
+details[open] > .person-summary .plus:after,
+details[open] > .client-summary .plus:after{
+  content:"−";
+  font-size:18px;
+}
+
+.person-body,
+.client-body{
+  border-top:1px solid #edf1f5;
+  padding:0 13px 13px;
+}
+
+.empty{
+  padding:20px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.footer{
+  margin-top:18px;
+  color:#708196;
+  font-size:11px;
+  line-height:1.45;
+}
+
+@media(max-width:1100px){
+  .dist-summary{
+    grid-template-columns:minmax(200px,1.8fr) repeat(2,minmax(100px,.85fr)) 28px;
+  }
+
+  .hide-md{display:none}
+}
+
+@media(max-width:780px){
+  main{padding:16px}
+
+  .head{flex-direction:column}
+
+  .source{text-align:left}
+
+  .actions{margin-left:0}
+
+  .field{min-width:calc(50% - 6px)}
+
+  .donuts{grid-template-columns:repeat(2,1fr)}
+
+  .dist-summary,
+  .person-summary{
+    grid-template-columns:1fr 26px;
+  }
+
+  .dist-summary .metric,
+  .person-summary .metric{
+    display:none;
+  }
+
+  .region-grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="head">
+    <div>
+      <div class="eyebrow">Trade Marketing · Auditorías de ejecución</div>
+      <div class="title">Estándar de Ejecución</div>
+      <div class="subtitle">
+        Status regional, completitud por distribuidor y detalle por responsable / cliente.
+      </div>
+    </div>
+
+    <div class="source" id="sourceInfo">
+      Cargando base publicada…
+    </div>
+  </div>
+</header>
+
+<main id="dashboard">
+
+  <section class="toolbar">
+
+    <div class="field">
+      <label>Región</label>
+      <select id="region"></select>
+    </div>
+
+    <div class="field">
+      <label>Distribuidor</label>
+      <select id="dist"></select>
+    </div>
+
+    <div class="field">
+      <label>Canal</label>
+      <select id="channel"></select>
+    </div>
+
+    <div class="field">
+      <label>Desde</label>
+      <input type="date" id="start">
+    </div>
+
+    <div class="field">
+      <label>Hasta</label>
+      <input type="date" id="end">
+    </div>
+
+    <div class="actions">
+      <button class="btn secondary" id="refresh">Actualizar base</button>
+
+      <label class="btn" for="upload">Cargar CSV</label>
+      <input class="hidden" id="upload" type="file" accept=".csv,text/csv">
+
+      <button class="btn secondary" id="clear">Borrar base cargada</button>
+      <button class="btn secondary" id="shareText">Compartir mensaje</button>
+      <button class="btn secondary" id="shareImage">Compartir foto</button>
+    </div>
+
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>Status de completitud por región</h2>
+      <span class="hint">
+        No cambia al seleccionar un distribuidor; respeta región, canal y fechas.
+      </span>
+    </div>
+
+    <div id="regions" class="region-grid"></div>
+  </section>
+
+  <section class="section">
+
+    <div class="section-head">
+      <h2>Alcance por distribuidor</h2>
+      <span class="hint">
+        Abrí cada nivel para ver pilares y relevamientos.
+      </span>
+    </div>
+
+    <div class="accordion-actions">
+      <button class="btn secondary" id="expand">Expandir todo</button>
+      <button class="btn secondary" id="collapse">Contraer todo</button>
+    </div>
+
+    <div id="distributors" class="list"></div>
+
+  </section>
+
+  <div class="footer">
+    <b>Completitud DI</b> = Supervisor + Jefe de Ventas + Staff Trade /
+    objetivo del distribuidor.
+    <b>Pendiente</b> = objetivo total menos alcance actual.
+    Los distribuidores sin objetivo no entran en el cálculo.
+  </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+
+const CSV_URL = "./data/auditorias.csv";
+
+const TARGETS = {
+  "BEBIDAS DEL MAR S.A.": 40,
+  "BEER TAN S.A.": 80,
+  "DEL PALACIO S.A.": 80,
+  "GRUPO DEL MAR": 280,
+  "GRUPO PEREZ SRL": 40,
+  "GRUPO VALPARAISO": 120,
+  "P D B SRL": 80,
+  "PAGANI RUBEN OSVALDO": 120,
+  "PUERTA DEL SUR S.A.": 120
+};
+
+let rows = [];
+let source = "Base publicada";
+
+const $ = id => document.getElementById(id);
+
+const norm = value =>
+  String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+const esc = value =>
+  String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[char]));
+
+const num = value => {
+  if (value == null || value === "") return null;
+
+  let text = String(value).replace(/\s/g, "");
+  const comma = text.lastIndexOf(",");
+  const dot = text.lastIndexOf(".");
+
+  if (comma > -1 && dot > -1) {
+    text = comma > dot
+      ? text.replace(/\./g, "").replace(",", ".")
+      : text.replace(/,/g, "");
+  } else if (comma > -1) {
+    text = text.replace(",", ".");
+  }
+
+  const result = Number.parseFloat(text);
+  return Number.isFinite(result) ? result : null;
+};
+
+const avg = values => {
+  const valid = values.filter(Number.isFinite);
+  return valid.length
+    ? valid.reduce((sum, value) => sum + value, 0) / valid.length
+    : null;
+};
+
+const uniq = values => [...new Set(values)];
+
+const fnum = (value, decimals = 0) =>
+  value == null || !Number.isFinite(value)
+    ? "—"
+    : new Intl.NumberFormat("es-AR", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      }).format(value);
+
+const fpct = value =>
+  value == null || !Number.isFinite(value)
+    ? "—"
+    : new Intl.NumberFormat("es-AR", {
+        style: "percent",
+        maximumFractionDigits: 1
+      }).format(value);
+
+function parseCSV(text) {
+  const output = [];
+  let row = [];
+  let cell = "";
+  let quoted = false;
+
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index];
+    const next = text[index + 1];
+
+    if (char === '"' && quoted && next === '"') {
+      cell += '"';
+      index++;
+      continue;
+    }
+
+    if (char === '"') {
+      quoted = !quoted;
+      continue;
+    }
+
+    if (char === "," && !quoted) {
+      row.push(cell);
+      cell = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !quoted) {
+      if (char === "\r" && next === "\n") index++;
+
+      row.push(cell);
+
+      if (row.some(value => value.trim())) {
+        output.push(row);
+      }
+
+      row = [];
+      cell = "";
+      continue;
+    }
+
+    cell += char;
+  }
+
+  if (cell || row.length) {
+    row.push(cell);
+    output.push(row);
+  }
+
+  const headers = (output.shift() || []).map(value => value.trim());
+
+  return output.map(values =>
+    Object.fromEntries(
+      headers.map((header, index) => [
+        header,
+        (values[index] || "").trim()
+      ])
+    )
+  );
+}
+
+function get(object, names) {
+  const keys = Object.keys(object);
+
+  for (const name of names) {
+    const key = keys.find(item => norm(item) === norm(name));
+    if (key !== undefined) return object[key];
+  }
+
+  return "";
+}
+
+function dateISO(value) {
+  const text = String(value || "").trim();
+
+  if (/^\d{4}-\d{2}-\d{2}/.test(text)) {
+    return text.slice(0, 10);
+  }
+
+  const match = text.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/);
+
+  if (!match) return "";
+
+  const year = match[3].length === 2 ? "20" + match[3] : match[3];
+
+  return year + "-" + match[2].padStart(2, "0") + "-" + match[1].padStart(2, "0");
+}
+
+function roleOf(value) {
+  const text = norm(value);
+
+  if (text.includes("supervisor")) return "Supervisor";
+  if (text.includes("jefe") || text.includes("jdv")) return "Jefe de Ventas";
+  if (text.includes("staff")) return "Staff Trade";
+  if (text.includes("edv") || text.includes("ejecutivo")) return "EDV";
+
+  return "Otros";
+}
+
+function enrich(rawRows) {
+  return rawRows
+    .map(record => ({
+      id: get(record, ["ID"]),
+      pdv: get(record, ["PDV ID", "PDV"]),
+      region: get(record, ["Región", "Region"]) || "Sin región",
+      dist: get(record, ["Distribuidor"]) || "Sin distribuidor",
+      channel: get(record, ["Canal"]) || "Sin canal",
+      date: dateISO(get(record, ["Fecha"])),
+      role: roleOf(get(record, ["Puesto"])),
+      person: (
+        get(record, ["Nombre"]) + " " + get(record, ["Apellido"])
+      ).replace(/\s+/g, " ").trim() || "Sin nombre",
+      sale: get(record, ["Condición Venta", "Condicion Venta"]),
+      score: num(get(record, ["Score Total"])),
+      price: num(get(record, ["Score Precio"])),
+      avail: num(get(record, ["Score Disponibilidad"])),
+      cold: num(get(record, ["Score Frío", "Score Frio"]))
+    }))
+    .filter(record => record.dist);
+}
+
+const isTarget = row => TARGETS[row.dist] != null;
+
+const isDI = row =>
+  ["Supervisor", "Jefe de Ventas", "Staff Trade"].includes(row.role) &&
+  isTarget(row);
+
+const target = distributor => TARGETS[distributor] ?? null;
+
+function tone(value) {
+  if (value == null) return "neutral";
+  if (value >= 75) return "good";
+  if (value >= 60) return "warn";
+  return "bad";
+}
+
+function status(value) {
+  const className =
+    value == null
+      ? "neutral"
+      : value >= 1
+        ? "good"
+        : value >= 0.7
+          ? "warn"
+          : "bad";
+
+  const label =
+    value == null
+      ? "Sin objetivo"
+      : value >= 1
+        ? "En objetivo"
+        : value >= 0.7
+          ? "En avance"
+          : "A recuperar";
+
+  return `<span class="status ${className}">${label}</span>`;
+}
+
+function donut(label, value) {
+  const percentage = Math.max(0, Math.min(100, value || 0));
+
+  return `
+    <div class="donut-wrap ${tone(value)}">
+      <div class="donut" style="--pct:${percentage}">
+        <b>${value == null ? "—" : fnum(value, 1)}</b>
+        <small>${esc(label)}</small>
+      </div>
+    </div>
+  `;
+}
+
+function pillars(items) {
+  const price = avg(items.map(item => item.price));
+  const availability = avg(items.map(item => item.avail));
+  const cold = avg(items.map(item => item.cold));
+  const score = avg(items.map(item => item.score));
+
+  return `
+    <div class="donuts">
+      ${donut("Precio", price)}
+      ${donut("Disponibilidad", availability)}
+      ${donut("Frío", cold)}
+      ${donut("Score total", score)}
+    </div>
+  `;
+}
+
+function values() {
+  return {
+    region: $("region").value,
+    dist: $("dist").value,
+    channel: $("channel").value,
+    start: $("start").value,
+    end: $("end").value
+  };
+}
+
+function filtered(ignoreDistributor = false) {
+  const filters = values();
+
+  return rows.filter(row =>
+    (!filters.region || row.region === filters.region) &&
+    ((ignoreDistributor || !filters.dist) || row.dist === filters.dist) &&
+    (!filters.channel || row.channel === filters.channel) &&
+    (!filters.start || row.date >= filters.start) &&
+    (!filters.end || row.date <= filters.end)
+  );
+}
+
+function groups(items, key) {
+  return items.reduce((output, item) => {
+    const groupKey = typeof key === "function" ? key(item) : item[key];
+    (output[groupKey] ??= []).push(item);
+    return output;
+  }, {});
+}
+
+function setOptions(element, items, label) {
+  const previous = element.value;
+
+  element.innerHTML =
+    `<option value="">${label}</option>` +
+    items.map(item => `<option value="${esc(item)}">${esc(item)}</option>`).join("");
+
+  if (items.includes(previous)) {
+    element.value = previous;
+  }
+}
+
+function setup() {
+  const regions = uniq(rows.map(row => row.region)).sort();
+  const distributors = uniq(rows.filter(isTarget).map(row => row.dist)).sort();
+  const channels = uniq(rows.map(row => row.channel)).sort();
+  const dates = rows.map(row => row.date).filter(Boolean).sort();
+
+  setOptions($("region"), regions, "Todas las regiones");
+  setOptions($("dist"), distributors, "Todos los distribuidores");
+  setOptions($("channel"), channels, "Todos los canales");
+
+  if (dates.length) {
+    $("start").min = $("end").min = dates[0];
+    $("start").max = $("end").max = dates.at(-1);
+
+    if (!$("start").value) $("start").value = dates[0];
+    if (!$("end").value) $("end").value = dates.at(-1);
+  }
+}
+
+function renderRegions() {
+  const base = filtered(true).filter(isDI);
+  const byRegion = groups(base, "region");
+  const names = Object.keys(byRegion).sort();
+
+  $("regions").innerHTML = names.length
+    ? names.map(name => {
+        const regionRows = byRegion[name];
+        const distributors = uniq(regionRows.map(row => row.dist));
+        const goal = distributors.reduce(
+          (sum, distributor) => sum + target(distributor),
+          0
+        );
+
+        const actual = regionRows.length;
+        const completion = goal ? actual / goal : null;
+        const lowScore = regionRows.filter(
+          row => row.score != null && row.score < 60
+        ).length;
+
+        const barClass =
+          completion < 0.45
+            ? "bad"
+            : completion < 0.7
+              ? "warn"
+              : "";
+
+        return `
+          <div class="card">
+            <div class="region-top">
+              <div>
+                <div class="label">Región</div>
+                <h3>${esc(name)}</h3>
+              </div>
+              ${status(completion)}
+            </div>
+
+            <div class="metric-row">
+              <span class="label">Completitud DI</span>
+              <strong>${fpct(completion)}</strong>
+            </div>
+
+            <div class="bar ${barClass}">
+              <span style="width:${Math.min(100, Math.round((completion || 0) * 100))}%"></span>
+            </div>
+
+            <div class="note">
+              ${fnum(actual)} realizados sobre ${fnum(goal)} objetivo total ·
+              ${fnum(lowScore)} resultados bajo 60.
+            </div>
+
+            ${pillars(regionRows)}
+          </div>
+        `;
+      }).join("")
+    : `<div class="card empty">No hay datos para el filtro actual.</div>`;
+}
+
+function personHtml(person, goal, totalExecuted) {
+  const count = person.rows.length;
+  const contribution = count / goal;
+  const executedShare = count / totalExecuted;
+
+  const clients = person.rows
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .map(row => `
+      <details class="client">
+        <summary class="client-summary">
+          <div class="summary-title">
+            <strong>${row.pdv ? "Cliente " + esc(row.pdv) : "Cliente sin ID"}</strong>
+            <span class="summary-sub">
+              ${[row.date, row.sale, row.id ? "ID " + row.id : ""]
+                .filter(Boolean)
+                .map(esc)
+                .join(" · ")}
+            </span>
+          </div>
+
+          <div class="plus">+</div>
+        </summary>
+
+        <div class="client-body">
+          <div class="subheading">Resultados por pilar</div>
+          ${pillars([row])}
+        </div>
+      </details>
+    `).join("");
+
+  return `
+    <details class="person">
+      <summary class="person-summary">
+        <div class="summary-title">
+          <strong>${esc(person.name)}</strong>
+          <span class="summary-sub">
+            ${esc(person.role)} · ${fnum(count)} relevamientos
+          </span>
+        </div>
+
+        <div class="metric">
+          <div class="m-label">Alcance actual</div>
+          <div class="m-value">${fnum(count)}</div>
+        </div>
+
+        <div class="metric">
+          <div class="m-label">Aporte al objetivo</div>
+          <div class="m-value">${fpct(contribution)}</div>
+        </div>
+
+        <div class="metric hide-md">
+          <div class="m-label">Aporte al ejecutado</div>
+          <div class="m-value">${fpct(executedShare)}</div>
+        </div>
+
+        <div class="plus">+</div>
+      </summary>
+
+      <div class="person-body">
+        <div class="subheading">Score alcanzado por pilar</div>
+        ${pillars(person.rows)}
+
+        <div class="subheading">Relevamientos por cliente</div>
+
+        <div class="people">
+          ${clients}
+        </div>
+      </div>
+    </details>
+  `;
+}
+
+function renderDistributors() {
+  const base = filtered(false).filter(isDI);
+  const byDistributor = groups(base, "dist");
+
+  const names = Object.keys(byDistributor).sort((a, b) => {
+    const completionA = byDistributor[a].length / target(a);
+    const completionB = byDistributor[b].length / target(b);
+
+    return completionA - completionB || a.localeCompare(b);
+  });
+
+  $("distributors").innerHTML = names.length
+    ? names.map((name, index) => {
+        const distributorRows = byDistributor[name];
+        const goal = target(name);
+        const actual = distributorRows.length;
+        const completion = actual / goal;
+        const pending = Math.max(goal - actual, 0);
+        const score = avg(distributorRows.map(row => row.score));
+        const region = uniq(distributorRows.map(row => row.region)).join(", ");
+
+        const people = Object.values(
+          groups(distributorRows, row => row.role + "|" + row.person)
+        )
+          .map(group => ({
+            rows: group,
+            name: group[0].person,
+            role: group[0].role
+          }))
+          .sort((a, b) => b.rows.length - a.rows.length)
+          .map(person => personHtml(person, goal, actual))
+          .join("");
+
+        return `
+          <details class="dist" ${index === 0 ? "open" : ""}>
+            <summary class="dist-summary">
+
+              <div class="summary-title">
+                <strong>${esc(name)}</strong>
+                <span class="summary-sub">
+                  ${esc(region)} · ${fnum(actual)} realizados ·
+                  ${fnum(pending)} pendientes
+                </span>
+              </div>
+
+              <div class="metric">
+                <div class="m-label">Completitud DI</div>
+                <div class="m-value">${fpct(completion)}</div>
+              </div>
+
+              <div class="metric">
+                <div class="m-label">Pendiente</div>
+                <div class="m-value">${fnum(pending)}</div>
+              </div>
+
+              <div class="metric hide-md">
+                <div class="m-label">Alcance actual</div>
+                <div class="m-value">${fnum(actual)}</div>
+              </div>
+
+              <div class="metric hide-md">
+                <div class="m-label">Score total</div>
+                <div class="m-value">${fnum(score, 1)}</div>
+              </div>
+
+              <div class="chevron">⌄</div>
+            </summary>
+
+            <div class="dist-body">
+              <div class="subheading">Score alcanzado por pilar</div>
+              ${pillars(distributorRows)}
+
+              <div class="subheading">
+                Detalle por supervisor / jefe de ventas / staff trade
+              </div>
+
+              <div class="people">
+                ${people}
+              </div>
+            </div>
+          </details>
+        `;
+      }).join("")
+    : `<div class="card empty">
+        No hay distribuidores con objetivo para el filtro actual.
+      </div>`;
+}
+
+function render() {
+  if (!rows.length) {
+    $("sourceInfo").innerHTML = `<b>Sin base cargada</b><br>Cargá el archivo CSV`;
+
+    $("regions").innerHTML =
+      `<div class="card empty">No hay una base activa.</div>`;
+
+    $("distributors").innerHTML =
+      `<div class="card empty">No hay una base activa.</div>`;
+
+    return;
+  }
+
+  const latestDate = rows.map(row => row.date).filter(Boolean).sort().at(-1);
+
+  $("sourceInfo").innerHTML = `
+    <b>${esc(source)}</b><br>
+    ${fnum(rows.length)} auditorías · ${latestDate || "sin fecha"}
+  `;
+
+  renderRegions();
+  renderDistributors();
+}
+
+async function loadPublished() {
+  source = "Cargando base publicada…";
+  render();
+
+  try {
+    const response = await fetch(
+      CSV_URL + "?v=" + Date.now(),
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+
+    const csv = await response.text();
+    const parsed = enrich(parseCSV(csv));
+
+    if (!parsed.length) {
+      throw new Error("sin registros");
+    }
+
+    rows = parsed;
+    source = "Base publicada · data/auditorias.csv";
+
+    setup();
+    render();
+  } catch (error) {
+    rows = [];
+    source = "No se pudo cargar data/auditorias.csv";
+
+    render();
+    console.error(error);
+  }
+}
+
+function buildText() {
+  const filters = values();
+  const base = filtered(true).filter(isDI);
+  const byRegion = groups(base, "region");
+
+  const output = [
+    "Estándar de Ejecución",
+    "Fuente: " + source,
+    "Filtros: " +
+      (filters.region || "Todas las regiones") +
+      " | " +
+      (filters.dist || "Todos los distribuidores") +
+      " | " +
+      (filters.channel || "Todos los canales") +
+      " | " +
+      (filters.start || "") +
+      " a " +
+      (filters.end || "")
+  ];
+
+  Object.keys(byRegion)
+    .sort()
+    .forEach(region => {
+      const regionRows = byRegion[region];
+      const goal = uniq(regionRows.map(row => row.dist))
+        .reduce((sum, distributor) => sum + target(distributor), 0);
+
+      output.push(
+        "- " +
+          region +
+          ": " +
+          fnum(regionRows.length) +
+          "/" +
+          fnum(goal) +
+          " (" +
+          fpct(regionRows.length / goal) +
+          ") | Score " +
+          fnum(avg(regionRows.map(row => row.score)), 1)
+      );
+    });
+
+  return output.join("\n");
+}
+
+async function shareText() {
+  if (!rows.length) {
+    alert("No hay base activa para compartir.");
+    return;
+  }
+
+  const text = buildText();
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: "Estándar de Ejecución",
+        text
+      });
+
+      return;
+    }
+
+    await navigator.clipboard.writeText(text);
+    alert("Resumen copiado al portapapeles.");
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      alert(text);
+    }
+  }
+}
+
+async function shareImage() {
+  if (!rows.length) {
+    alert("No hay base activa para compartir.");
+    return;
+  }
+
+  if (typeof html2canvas === "undefined") {
+    alert("No se pudo cargar el capturador de imagen.");
+    return;
+  }
+
+  const button = $("shareImage");
+  const previousText = button.textContent;
+
+  button.disabled = true;
+  button.textContent = "Generando foto…";
+
+  try {
+    const canvas = await html2canvas($("dashboard"), {
+      backgroundColor: "#f3f6fa",
+      scale: 1.5,
+      useCORS: true
+    });
+
+    const blob = await new Promise(resolve =>
+      canvas.toBlob(resolve, "image/png")
+    );
+
+    const file = new File(
+      [blob],
+      "dashboard_estandar_ejecucion.png",
+      { type: "image/png" }
+    );
+
+    if (navigator.canShare?.({ files: [file] }) && navigator.share) {
+      await navigator.share({
+        title: "Estándar de Ejecución",
+        files: [file]
+      });
+    } else {
+      const link = document.createElement("a");
+
+      link.href = URL.createObjectURL(blob);
+      link.download = file.name;
+
+      link.click();
+
+      URL.revokeObjectURL(link.href);
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      alert("No se pudo generar la foto.");
+    }
+  } finally {
+    button.disabled = false;
+    button.textContent = previousText;
+  }
+}
+
+$("refresh").onclick = loadPublished;
+
+$("clear").onclick = () => {
+  rows = [];
+  source = "Sin base cargada";
+  render();
+};
+
+$("upload").onchange = event => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    rows = enrich(parseCSV(String(reader.result)));
+    source = file.name;
+
+    setup();
+    render();
+  };
+
+  reader.readAsText(file, "utf-8");
+};
+
+$("shareText").onclick = shareText;
+$("shareImage").onclick = shareImage;
+
+$("expand").onclick = () => {
+  document.querySelectorAll("details").forEach(item => {
+    item.open = true;
+  });
+};
+
+$("collapse").onclick = () => {
+  document.querySelectorAll("details").forEach(item => {
+    item.open = false;
+  });
+};
+
+["region", "dist", "channel", "start", "end"].forEach(id => {
+  $(id).onchange = render;
+});
+
+loadPublished();
+
+</script>
+
+</body>
+</html>
